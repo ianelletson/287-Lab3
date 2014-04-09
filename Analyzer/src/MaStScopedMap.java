@@ -1,16 +1,27 @@
-/** A ScopedMap is similar to a Map, but with nested scopes. */
-// I'm making this class an abstract class to allow for the potential of
-// different data structure implementations
-// This might be better suited to be an interface but I am holding off
-// on making too many drastic changes
-// TODO: change to interface
-public abstract class ScopedMap<K, V> {
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
+/**
+ * This implementation is a Map of Stacks hence MaSt It is the data structure
+ * suggested by classmates on our first day in lab
+ * 
+ * @author ielletso
+ * 
+ */
+public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
+	private Map<K, Deque<V>> vars;
+	private Deque<Set<K>> localVars;
 	/**
 	 * makes a ScopedMap that maps no keys to values and is set to the global
 	 * scope (nesting level 0)
 	 */
-	public ScopedMap() {
+	public MaStScopedMap() {
+		// I'm using Deque because that is what's recommended on the doc pages
+		vars = new HashMap<K, Deque<V>>();
 		// TODO: write this
 	}
 
@@ -20,6 +31,8 @@ public abstract class ScopedMap<K, V> {
 	 */
 	public void enterScope() {
 		// TODO: write this
+		HashSet<K> tempHash = new HashSet<K>();
+		localVars.push(tempHash);
 	}
 
 	/**
