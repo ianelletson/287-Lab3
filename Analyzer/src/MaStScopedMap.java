@@ -1,3 +1,4 @@
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -5,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+// TODO handle errors
 /**
  * This implementation is a Map of Stacks hence MaSt It is the data structure
  * suggested by classmates on our first day in lab
@@ -12,9 +14,10 @@ import java.util.Stack;
  * @author ielletso
  * 
  */
-public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
+public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	private Map<K, Deque<V>> vars;
 	private Deque<Set<K>> localVars;
+
 	/**
 	 * makes a ScopedMap that maps no keys to values and is set to the global
 	 * scope (nesting level 0)
@@ -22,7 +25,7 @@ public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
 	public MaStScopedMap() {
 		// I'm using Deque because that is what's recommended on the doc pages
 		vars = new HashMap<K, Deque<V>>();
-		// TODO: write this
+		localVars = new ArrayDeque<Set<K>>();
 	}
 
 	/**
@@ -30,7 +33,8 @@ public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
 	 * nesting level increases by one
 	 */
 	public void enterScope() {
-		// TODO: write this
+		// I want to take all the K in map at the current time and push them to
+		// local
 		HashSet<K> tempHash = new HashSet<K>();
 		localVars.push(tempHash);
 	}
@@ -49,7 +53,15 @@ public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
 	 * the key nor the value may be null
 	 */
 	public void put(K key, V value) {
-		// TODO: write this
+		localVars.peekFirst().add(key);
+		// If the key doesn't exist yet, make a new Deque else push to Deque
+		if (vars.containsKey(key)) {
+			Deque<V> vals = new ArrayDeque<V>();
+			vals.push(value);
+			vars.put(key, vals);
+		} else {
+			vars.get(key).push(value);
+		}
 	}
 
 	/**
@@ -66,8 +78,8 @@ public class MaStScopedMap<K, V> extends ScopedMap<K, V> {
 	 * surrounding ones)
 	 */
 	public boolean isLocal(K key) {
-		// TODO: write this
-		return false;
+		boolean local = localVars.peekFirst().contains(key);
+		return local;
 	}
 
 	/** returns the current nesting level */
