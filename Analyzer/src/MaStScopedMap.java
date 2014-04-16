@@ -2,6 +2,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -45,6 +46,7 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 */
 	public void exitScope() {
 		// TODO: write this
+		localVars.remove();
 	}
 
 	/**
@@ -70,7 +72,15 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 */
 	public V get(K key) {
 		// TODO: write this
-		return null;
+		// This will be the trickiest -- I want to check if isLocal and if it is
+		// return that else I want to move up the stack until I found the most
+		// "local" one.
+		// TODO this is probably crap
+		V value = null;
+		if (!vars.get(key).isEmpty()) {
+			value = vars.get(key).pop();
+		}
+		return value;
 	}
 
 	/**
@@ -84,7 +94,7 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 
 	/** returns the current nesting level */
 	public int getNestingLevel() {
-		// TODO: write this
-		return 0;
+		int sizeOfStack = localVars.size();
+		return sizeOfStack;
 	}
 }
