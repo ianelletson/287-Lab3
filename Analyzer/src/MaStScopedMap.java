@@ -16,7 +16,15 @@ import java.util.Stack;
  * 
  */
 public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
+	/**
+	 * vars is a map with Key: variables declared anywhere in program Values: a
+	 * stack of the value of Key top of stack is most recent declaration
+	 */
 	private Map<K, Deque<V>> vars;
+	/**
+	 * localVars is a stack of scopes and at each level is set of the declared
+	 * variables in that scope
+	 */
 	private Deque<Set<K>> localVars;
 
 	/**
@@ -45,7 +53,7 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 * level, which must have been positive, decreases by one
 	 */
 	public void exitScope() {
-		// TODO: write this
+		// TODO: write this; make sure scope level can't go negative
 		localVars.remove();
 	}
 
@@ -55,14 +63,17 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 * the key nor the value may be null
 	 */
 	public void put(K key, V value) {
-		localVars.peekFirst().add(key);
-		// If the key doesn't exist yet, make a new Deque else push to Deque
+		localVars.peekFirst().add(key); // Because it is a set this
+										// automatically takes care of
+										// duplicates
+		// I will check to see if key currently exists, if it does, I will
+		// update value, if it does not, I will add key:value
 		if (vars.containsKey(key)) {
-			Deque<V> vals = new ArrayDeque<V>();
-			vals.push(value);
-			vars.put(key, vals);
-		} else {
 			vars.get(key).push(value);
+		} else {
+			Deque<V> tempQue = new ArrayDeque<V>();
+			tempQue.add(value);
+			vars.put(key, tempQue);
 		}
 	}
 
@@ -76,11 +87,7 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 		// return that else I want to move up the stack until I found the most
 		// "local" one.
 		// TODO this is probably crap
-		V value = null;
-		if (!vars.get(key).isEmpty()) {
-			value = vars.get(key).pop();
-		}
-		return value;
+		return null;
 	}
 
 	/**
