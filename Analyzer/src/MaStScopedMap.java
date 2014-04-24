@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -53,8 +54,14 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 * level, which must have been positive, decreases by one
 	 */
 	public void exitScope() {
-		// TODO: write this; make sure scope level can't go negative
-		localVars.remove();
+		// I learned how to iterate through a map from this link:
+		// http://stackoverflow.com/questions/1066589/java-iterate-through-hashmap
+		Iterator<Entry<K, Deque<V>>> itr = vars.entrySet().iterator();
+		while (itr.hasNext()) {
+			Entry<K, Deque<V>> kItr = itr.next();
+			kItr.getValue().removeFirst();
+		}
+		localVars.removeFirst();
 	}
 
 	/**
@@ -84,10 +91,22 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	public V get(K key) {
 		// TODO: write this
 		// This will be the trickiest -- I want to check if isLocal and if it is
-		// return that else I want to move up the stack until I found the most
+		// return that else I want to move down the stack until I found the most
 		// "local" one.
 		// TODO this is probably crap
-		return null;
+		V value = null;
+		if (isLocal(key)) {
+			value = vars.get(key).peekFirst();
+		} else {
+			Iterator<Set<K>> itr = localVars.iterator();
+			while (itr.hasNext()) {
+				Set<K> localSet = itr.next();
+				if (localSet.contains(key)) {
+					value = vars.get(key).peek();
+				}
+			}
+		}
+		return value;
 	}
 
 	/**
