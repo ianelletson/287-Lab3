@@ -55,7 +55,9 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 		Iterator<Entry<K, Deque<V>>> itr = vars.entrySet().iterator();
 		while (itr.hasNext()) {
 			Entry<K, Deque<V>> kItr = itr.next();
-			kItr.getValue().removeFirst();
+			if (!kItr.getValue().isEmpty()) {
+				kItr.getValue().removeFirst();
+			}
 		}
 		localVars.removeFirst();
 	}

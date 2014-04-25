@@ -7,7 +7,8 @@ public class AnalyzerTest {
 	@Test
 	public void example() {
 		Analyzer a = new Analyzer();
-		a.analyze("begin declare x begin declare x use y end end");
+		a.analyze("begin use x declare x use x begin declare x use x begin use x end end end");
+		a.analyze("begin use x end");
 		assertEquals(
 				"begin\n" + "  pass\n" + "  declare x {declaration 1}\n"
 						+ "  use y {illegal undeclared use}\n"

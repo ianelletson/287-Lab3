@@ -59,7 +59,7 @@ public class Analyzer {
 		// assuming case insensitivity
 		while (scr.hasNext()) {
 			String next = scr.next().toLowerCase();
-			// This will make sure begin
+			// This will make sure begin is the first token in the input
 			if (!firstWordCheck) {
 				if (!next.equals(KEYWORDS_ARRAY[BEGIN])) {
 					scr.close();
@@ -111,6 +111,10 @@ public class Analyzer {
 					}
 					sb.append(next + SPACE + "{" + useable + "}" + "\n");
 				}
+			} else if (!KEYWORDS.contains(next)) {
+				// This makes sure variables have to be declared or used
+				scr.close();
+				throw new IllegalArgumentException();
 			}
 		}
 		scr.close();
