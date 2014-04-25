@@ -5,8 +5,9 @@ import java.util.Set;
 
 /**
  * Analyzer is dependent on Java 1.7 to run
+ * 
  * @author ielletso
- *
+ * 
  */
 public class Analyzer {
 
@@ -21,12 +22,13 @@ public class Analyzer {
 	final static String[] KEYWORDS_ARRAY = new String[] { "begin", "end",
 			"pass", "declare", "use" };
 	/**
-	 * The keywords of the language in Set form for easy membership checking
+	 * The keywords of the language in a Set for easy membership checking
 	 */
 	// Learned how to implement from:
 	// http://stackoverflow.com/questions/2041778/initialize-java-hashset-values-by-construction
 	final static Set<String> KEYWORDS = new HashSet<String>(
 			Arrays.asList(KEYWORDS_ARRAY));
+	// The indices of the keywords in KEYWORDS_ARRAY
 	final static int BEGIN = 0;
 	final static int END = 1;
 	final static int PASS = 2;
@@ -50,17 +52,22 @@ public class Analyzer {
 		StringBuilder sb = new StringBuilder();
 		ScopedMap<String, Integer> sm = new MaStScopedMap<String, Integer>();
 		int declareCounter = 1;
-		int blockLevel = 0; // TODO: change all instances to getNestingLevel();
+		int blockLevel = 0;
+		boolean firstWordCheck = false;
 
-		// Read input into ScopedMap assuming case insensitivity
-		// TODO: convert to switch
+		// Read input into ScopedMap and build string
+		// assuming case insensitivity
 		while (scr.hasNext()) {
 			String next = scr.next().toLowerCase();
-			
-			switch (next) {
-				
+			// This will make sure begin
+			if (!firstWordCheck) {
+				if (!next.equals(KEYWORDS_ARRAY[BEGIN])) {
+					scr.close();
+					throw new IllegalArgumentException();
+				} else {
+					firstWordCheck = true;
+				}
 			}
-			
 			if (next.equals(KEYWORDS_ARRAY[BEGIN])) {
 				sm.enterScope();
 				sb.append(multiplyString(INDENT, blockLevel) + next + "\n");
@@ -75,9 +82,9 @@ public class Analyzer {
 				sb.append(multiplyString(INDENT, blockLevel) + next + SPACE);
 				next = scr.next();
 				if (KEYWORDS.contains(next)) {
+					scr.close();
 					throw new IllegalArgumentException();
 				} else {
-					// TODO: make finals
 					String declaration = "";
 					if (sm.isLocal(next)) {
 						declaration = "illegal redeclaration";
@@ -92,6 +99,7 @@ public class Analyzer {
 				sb.append(multiplyString(INDENT, blockLevel) + next + SPACE);
 				next = scr.next();
 				if (KEYWORDS.contains(next)) {
+					scr.close();
 					throw new IllegalArgumentException();
 				} else {
 					String useable = "";
@@ -105,13 +113,16 @@ public class Analyzer {
 				}
 			}
 		}
-
+		scr.close();
+		if (blockLevel != 0) { // If begins != ends
+			throw new IllegalArgumentException();
+		}
 		System.out.println(sb);
 		return sb.toString();
 	}
 
 	/**
-	 * This allows python-like string multiplication
+	 * This allows Python-inspired string multiplication
 	 * 
 	 * @param str
 	 *            - the string to be multiplied

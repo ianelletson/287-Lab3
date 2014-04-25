@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-// TODO handle errors
 /**
  * This implementation is a Map of Stacks hence MaSt It is the data structure
  * suggested by classmates on our first day in lab
@@ -42,8 +41,6 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 * nesting level increases by one
 	 */
 	public void enterScope() {
-		// I want to take all the K in map at the current time and push them to
-		// local
 		HashSet<K> tempHash = new HashSet<K>();
 		localVars.push(tempHash);
 	}
@@ -88,11 +85,6 @@ public class MaStScopedMap<K, V> implements ScopedMap<K, V> {
 	 * there is one; if there is none, returns null
 	 */
 	public V get(K key) {
-		// TODO: write this
-		// This will be the trickiest -- I want to check if isLocal and if it is
-		// return that else I want to move down the stack until I found the most
-		// "local" one.
-		// TODO this is probably crap
 		V value = null;
 		if (isLocal(key)) {
 			value = vars.get(key).peekFirst();
